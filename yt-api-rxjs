@@ -11,11 +11,11 @@ const url$ = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResul
 const data$ = fromFetch(url$).pipe(
     concatMap(response => {
    if (response.ok) {
-     // OK return data
+     // if okay, return data
      return response.json();
    }
    else {
-     // Server is returning a status requiring the client to try something else.
+     // error status shown
      return of({ error: true, message: `Error ${response.status}` });
    }
 }),
@@ -33,7 +33,7 @@ data$.subscribe(
     () => addItem('Completed')
    );
 
-
+// i want to show the response in ul-li list, this adds the node, textnodes under it
 function addItem (items:any) {
     var node = document.createElement("li");
     var textnode = document.createTextNode(items);
@@ -41,7 +41,7 @@ function addItem (items:any) {
     document.getElementById("output").appendChild(node);
 }
 
-
+// this removes the node, textnodes under it
 function removeItem (snippets:any) {
     var node = document.createElement("li");
     var textnode = document.createTextNode(snippets);

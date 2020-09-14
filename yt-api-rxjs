@@ -1,0 +1,50 @@
+import { Observable } from "rxjs/Observable";
+import 'rxjs/add/operator/share';
+import { of } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
+//import { switchMap, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { concatMap, catchError } from 'rxjs/operators';
+
+
+const url$ = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=surfing&key=[API-key]';
+const data$ = fromFetch(url$).pipe(
+    concatMap(response => {
+   if (response.ok) {
+     // OK return data
+     return response.json();
+   }
+   else {
+     // Server is returning a status requiring the client to try something else.
+     return of({ error: true, message: `Error ${response.status}` });
+   }
+}),
+catchError(err => {
+    // Network or other error, handle appropriately
+    console.error(err);
+    return of({ error: true, message: err.message })
+  })
+  );
+
+
+data$.subscribe(
+    (items:any) => console.log(items),
+    (error:any) => removeItem(error),
+    () => addItem('Completed')
+   );
+
+
+function addItem (items:any) {
+    var node = document.createElement("li");
+    var textnode = document.createTextNode(items);
+    node.appendChild(textnode);
+    document.getElementById("output").appendChild(node);
+}
+
+
+function removeItem (snippets:any) {
+    var node = document.createElement("li");
+    var textnode = document.createTextNode(snippets);
+    node.removeChild(textnode);
+    document.getElementById("output").removeChild(node);
+}
